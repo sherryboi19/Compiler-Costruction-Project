@@ -15,10 +15,12 @@ Running Manual
 
 Output
 ------
+
 token.txt         Containing All the Generated Tokens
 identifier.txt    Containing All the Identifiers
 symbol.txt        Containing All the Variables,DataType,Value,Linenum
 
 Console Output
 --------------
+
 All the lines Containing echo keyword
