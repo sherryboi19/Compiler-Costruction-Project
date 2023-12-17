@@ -39,47 +39,30 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     INTEGER = 258,
-     FLOAT = 259,
-     CHARACTER = 260,
-     STRING = 261,
-     IDENTIFIER = 262,
-     OPERATOR = 263,
-     PUNCTUATION = 264,
-     KW_BEGIN = 265,
-     KW_END = 266,
-     KW_IF = 267,
-     KW_ELSE = 268,
-     KW_WHILE = 269,
-     KW_ECHO = 270,
-     KW_FUNCTION = 271,
-     KW_CLASS = 272,
-     KW_RETURN = 273,
-     KW_VAR = 274,
-     KW_TRUE = 275,
-     KW_FALSE = 276
+     PhpStart = 258,
+     PhpEnd = 259,
+     ID = 260,
+     INT = 261,
+     FLOAT = 262,
+     STRING = 263,
+     LE = 264,
+     GE = 265,
+     ET = 266,
+     NE = 267,
+     POW = 268,
+     IF = 269,
+     ELSE = 270,
+     FUNC = 271,
+     WHILE = 272,
+     ECHO_T = 273,
+     CLASS_T = 274
    };
 #endif
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
-{
-
-/* Line 1676 of yacc.c  */
-#line 11 "project.y"
-
-    int num;
-    char *str;
-    float fnum;
-    char ch;
-
-
-
-/* Line 1676 of yacc.c  */
-#line 82 "project.tab.h"
-} YYSTYPE;
+typedef int YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

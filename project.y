@@ -1,127 +1,103 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-extern int yylineno;  // Declare yylineno here
-void yyerror(const char *s);  // Declare yyerror here
+
+extern FILE *outfile;
+
 %}
+
+%start program
 
 %union {
     int num;
     char *str;
+    float fnum;
+    char ch;
 }
 
-%token EQ NE GE LE GT LT ASSIGN PLUS MINUS MULTIPLY DIVIDE POWER SEMICOLON LEFT_BRACE RIGHT_BRACE LEFT_PAREN RIGHT_PAREN QUESTION_MARK ECHO IF ELSE WHILE PHP_CLOSE COMMA CLASS FUNCTION PHP_OPEN
-
-%token <num> INTEGER
-%token <str> IDENTIFIER STRING_LITERAL
-
-%%
-program:
-    PHP_OPEN statements PHP_CLOSE
-    {
-        printf("Code Compiled Successfully\n");
-        exit(0);
-    }
-    ;
-
-statements:
-    /* empty */
-    | statements statement
-    ;
-
-statement:
-    assignment_statement
-    | bool_expression_statement
-    | repetition_statement
-    | decision_structure
-    | output_statement
-    | function_statement
-    | class_definition
-    ;
-
-assignment_statement:
-    IDENTIFIER ASSIGN expr SEMICOLON
-    ;
-
-bool_expression_statement:
-    expr SEMICOLON
-    ;
-
-repetition_statement:
-    WHILE LEFT_PAREN expr RIGHT_PAREN LEFT_BRACE statements RIGHT_BRACE
-    ;
-
-decision_structure:
-    if_statement
-    | if_else_statement
-    ;
-
-if_statement:
-    IF LEFT_PAREN expr RIGHT_PAREN LEFT_BRACE statements RIGHT_BRACE
-    ;
-
-if_else_statement:
-    IF LEFT_PAREN expr RIGHT_PAREN LEFT_BRACE statements RIGHT_BRACE ELSE LEFT_BRACE statements RIGHT_BRACE
-    ;
-
-output_statement:
-    ECHO STRING_LITERAL SEMICOLON
-    ;
-
-function_statement:
-    FUNCTION IDENTIFIER LEFT_PAREN parameter_list RIGHT_PAREN LEFT_BRACE statements RIGHT_BRACE
-    ;
-
-parameter_list:
-    /* empty */
-    | IDENTIFIER
-    | IDENTIFIER COMMA parameter_list
-    ;
-
-class_definition:
-    CLASS IDENTIFIER LEFT_BRACE assign_statements function_statements RIGHT_BRACE
-    ;
-
-assign_statements:
-    /* empty */
-    | assign_statement assign_statements
-    ;
-
-assign_statement:
-    IDENTIFIER ASSIGN expr SEMICOLON
-    ;
-
-function_statements:
-    /* empty */
-    | function_statement function_statements
-    ;
-
-expr:
-    INTEGER
-    | IDENTIFIER
-    | expr PLUS expr
-    | expr MINUS expr
-    | expr MULTIPLY expr
-    | expr DIVIDE expr
-    | expr POWER expr
-    | expr EQ expr
-    | expr NE expr
-    | expr GE expr
-    | expr LE expr
-    | expr GT expr
-    | expr LT expr
-    | LEFT_PAREN expr RIGHT_PAREN
-    ;
+%token INTEGER FLOAT CHARACTER STRING IDENTIFIER
+%token OPERATOR PUNCTUATION
+%token KW_BEGIN KW_END KW_IF KW_ELSE KW_WHILE KW_ECHO KW_FUNCTION KW_CLASS
+%token KW_RETURN KW_VAR KW_TRUE KW_FALSE
 
 %%
 
-void yyerror(const char *s) {
-    print("Line %d: %s\n", yylineno);
-    printf("Code cannot be compiled\n");
-    exit(1);
+program : KW_BEGIN statements KW_END
+       ;
+
+statements : statement ';'
+           | statements statement ';'
+           ;
+
+statement : variable_declaration
+          | assignment_statement
+          | if_statement
+          | while_statement
+          | echo_statement
+          | function_declaration
+          | class_declaration
+          ;
+
+variable_declaration : KW_VAR IDENTIFIER '=' expression ';'
+                     | KW_VAR IDENTIFIER ';'
+                     ;
+
+assignment_statement : IDENTIFIER OPERATOR expression ';'
+                     ;
+
+expression : INTEGER
+           | FLOAT
+           | CHARACTER
+           | STRING
+           | IDENTIFIER
+           | expression OPERATOR expression
+           | '(' expression ')'
+           | KW_TRUE
+           | KW_FALSE
+           ;
+
+if_statement : KW_IF '(' expression ')' '{' statements '}'
+               | KW_IF '(' expression ')' '{' statements '}' KW_ELSE '{' statements '}'
+               ;
+
+while_statement : KW_WHILE '(' expression ')' '{' statements '}'
+                 ;
+
+echo_statement : KW_ECHO expression ';'
+                | KW_ECHO STRING ';'
+                ;
+
+function_declaration : KW_FUNCTION IDENTIFIER '(' parameter_list ')' '{' statements KW_RETURN expression ';''}' 
+                     ;
+
+parameter_list : IDENTIFIER
+                | parameter_list ',' IDENTIFIER
+                ;
+
+class_declaration : KW_CLASS IDENTIFIER '{' member_declaration '}'
+                  ;
+
+member_declaration : variable_declaration
+                   | function_declaration
+                   ;
+
+%%
+
+int yyerror(const char *s) 
+{
+  printf("Error: %s\n", s);
+  return 0;
 }
 
-int main() {
-    yyparse();
-    return 0;
+int main() 
+{
+  outfile = fopen("token.txt", "w");
+  yylex();
+  fclose(outfile);
+
+  outfile = fopen("Identifier.txt", "w");
+  yyparse();
+  fclose(outfile);
+
+  return 0;
 }

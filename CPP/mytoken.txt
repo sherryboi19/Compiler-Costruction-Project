@@ -1,0 +1,66 @@
+-----------------------------------
+|        TOKENS GGENERATED        |
+-----------------------------------
+Tokken < Starting , <?php > 
+Tokken < Identity , $value > 
+Tokken < BiOperator , = > 
+Tokken < IntLiteral , 20 > 
+Tokken < SemiColon , ; > 
+Tokken < Identity , $a > 
+Tokken < BiOperator , = > 
+Tokken < StrLiteral , Hello > 
+Tokken < SemiColon , ; > 
+Tokken < Identity , $c > 
+Tokken < BiOperator , = > 
+Tokken < FloatLiteral , 2.3 > 
+Tokken < SemiColon , ; > 
+Tokken < Identity , $d > 
+Tokken < BiOperator , = > 
+Tokken < Identity , $c > 
+Tokken < SemiColon , ; > 
+Tokken < Identity , $a > 
+Tokken < BiOperator , = > 
+Tokken < IntLiteral , 5 > 
+Tokken < SemiColon , ; > 
+Tokken < Identity , $c > 
+Tokken < BiOperator , = > 
+Tokken < StrLiteral , Shaheer > 
+Tokken < SemiColon , ; > 
+Tokken < Identity , $name > 
+Tokken < BiOperator , = > 
+Tokken < Identity , $a > 
+Tokken < SemiColon , ; > 
+Tokken < Comment ,  This is a comment $a=8; > 
+Tokken < KeyWord , echo > 
+Tokken < StrLiteral , Hello, Sir! > 
+Tokken < SemiColon , ; > 
+Tokken < Comment ,  This is a     multiline comment  > 
+Tokken < KeyWord , if > 
+Tokken < Bracket , ( > 
+Tokken < Identity , $value > 
+Tokken < CondOperator , > > 
+Tokken < IntLiteral , 10 > 
+Tokken < Bracket , ) > 
+Tokken < Bracket , { > 
+Tokken < KeyWord , echo > 
+Tokken < StrLiteral , Value is greater than 10 > 
+Tokken < SemiColon , ; > 
+Tokken < Bracket , } > 
+Tokken < KeyWord , class > 
+Tokken < Identity , $myclass > 
+Tokken < Bracket , { > 
+Tokken < Identity , $z > 
+Tokken < BiOperator , = > 
+Tokken < IntLiteral , 10 > 
+Tokken < SemiColon , ; > 
+Tokken < KeyWord , function > 
+Tokken < Identity , $f > 
+Tokken < Bracket , ( > 
+Tokken < Bracket , ) > 
+Tokken < Bracket , { > 
+Tokken < KeyWord , echo > 
+Tokken < StrLiteral , Hi > 
+Tokken < SemiColon , ; > 
+Tokken < Bracket , } > 
+Tokken < Bracket , } > 
+Tokken < Closing , ?> > 

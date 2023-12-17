@@ -1,48 +1,48 @@
 %{
-#include "project.tab.h"
+#include <stdio.h>
 #include <string.h>
+#include "project.tab.h"
+
+FILE *outfile;
 
 %}
 
-%option noyywrap
-
-%%
-[ \t\n]                   ; // Skip whitespace characters
-[0-9]+                    { yylval.num = atoi(yytext); return INTEGER; }
-\$[a-zA-Z_][a-zA-Z0-9_]*  { yylval.str = strdup(yytext); return IDENTIFIER; }
-"=="                      { return EQ; }
-"!="                      { return NE; }
-">="                      { return GE; }
-"<="                      { return LE; }
-">"                       { return GT; }
-"<"                       { return LT; }
-"="                       { return ASSIGN; }
-"+"                       { return PLUS; }
-"-"                       { return MINUS; }
-"*"                       { return MULTIPLY; }
-"/"                       { return DIVIDE; }
-"**"                      { return POWER; }
-";"                       { return SEMICOLON; }
-"{"                       { return LEFT_BRACE; }
-"}"                       { return RIGHT_BRACE; }
-"("                       { return LEFT_PAREN; }
-")"                       { return RIGHT_PAREN; }
-","                       { return COMMA; }
-"\?"                      { return QUESTION_MARK; }
-"echo"                    { return ECHO; }
-"if"                      { return IF; }
-"else"                    { return ELSE; }
-"while"                   { return WHILE; }
-"function"                { return FUNCTION; }
-"class"                   { return CLASS; }
-"<?php"                   { return PHP_OPEN; }
-"?>"                      { return PHP_CLOSE; }
-\"[^"]*\"                 { yylval.str = strdup(yytext); return STRING_LITERAL; }
-.                         ; // Ignore any other characters
+%option case-insensitive
 
 %%
 
-int yywrap() 
-{
-    return (1);
+"<?php" { printf("Keyword: <?php\n"); yylval.str = strdup(yytext); return KW_BEGIN; }
+"?>" { printf("Keyword: ?>\n"); yylval.str = strdup(yytext); return KW_END; }
+"if" { printf("Keyword: if\n"); yylval.str = strdup(yytext); return KW_IF; }
+"else" { printf("Keyword: else\n"); yylval.str = strdup(yytext); return KW_ELSE; }
+"while" { printf("Keyword: while\n"); yylval.str = strdup(yytext); return KW_WHILE; }
+"function" { printf("Keyword: function\n"); yylval.str = strdup(yytext); return KW_FUNCTION; }
+"echo" { printf("Keyword: echo\n"); yylval.str = strdup(yytext); return KW_ECHO; }
+"var" { printf("Keyword: var\n"); yylval.str = strdup(yytext); return KW_VAR; }
+"class" { printf("Keyword: class\n"); yylval.str = strdup(yytext); return KW_CLASS; }
+"return" { printf("Keyword: return\n"); yylval.str = strdup(yytext); return KW_RETURN; }
+"true" { printf("Keyword: true\n"); yylval.str = strdup(yytext); return KW_TRUE; }
+"false" { printf("Keyword: false\n"); yylval.str = strdup(yytext); return KW_FALSE; }
+
+[\$][a-zA-Z_][a-zA-Z0-9_]* { printf("Identifier: %s\n", yytext); yylval.str = strdup(yytext); return IDENTIFIER; }
+[0-9]+ { printf("Integer: %s\n", yytext); yylval.num = atoi(yytext); return INTEGER; }
+[0-9]+\.[0-9]+ { printf("Float: %s\n", yytext); yylval.fnum = atof(yytext); return FLOAT; }
+"." { printf("Character: %s\n", yytext); yylval.ch = yytext[0]; return CHARACTER; }
+"['\"]"(.|\n)*"['\"]" { printf("String: %s\n", yytext); yylval.str = strdup(yytext); return STRING; }
+
+
+[ \t\n] ;
+
+\+|\-|\*|\/|\%|\*\*|\!|\=\=|\<\=|\>\=|\<\>|\=\>|\<|\> { printf("Operator: %s\n", yytext); return yytext[0]; }
+\;|\,|\(|\)|\{|\}|\[|\] { printf("Punctuation: %s\n", yytext); return yytext[0]; }
+
+"//".* { printf("Single-line comment: %s\n", yytext); }
+"/*"(.|\n)*"*/" { printf("Multi-line comment: %s\n", yytext); }
+
+.|\n { printf("Unknown character: %s\n", yytext);}
+
+%%
+
+int yywrap() {
+  return 1;
 }
