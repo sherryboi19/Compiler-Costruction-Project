@@ -32,7 +32,8 @@ del [ \t\n]
 "=="                              {return(ET);}
 "!="                              {return(NE);}
 "**"                              {return(POW);}
-{del}*                                                
+{del}*               
+. {;}                                 
 
 %%
 int yywrap(void){}

@@ -54,10 +54,17 @@ DecStruct: IF '(' BoolExp ')' '{' StatementList '}'
          | IF '(' BoolExp ')' '{' StatementList '}' ELSE '{' StatementList '}';
  
 
-OutStmt: ECHO_T Output ';' ;
+OutStmt: ECHO_T Output OutputP ';'
+        ;
+
+OutputP: '.' Output OutputP
+        | 
+        ;
 Output: STRING
-       | ID 
-       | STRING '.' ID '.' STRING;
+      | ID 
+      | INT
+      | FLOAT
+      ;
 
 
 FuncStmt: FUNC ID '(' ')' '{' StatementList '}';
@@ -77,6 +84,5 @@ ClassStatement: DecStmt
 void yyerror(const char *str)
 {
   printf("Code cannot be compiled\n");
-  fprintf(stderr,"Error type: %s\n",str);
-  fprintf(stderr,"Line number: %d\n",yylineno);
+  printf("\033[31mERROR %s AT LINE %d\n\033[0m",str,yylineno);
 }
