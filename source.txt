@@ -1,6 +1,5 @@
 <?php
     $value=20;
-    $a="Hello";
     $c=2.3;
     $d=$c;
     $a=$c + 5 * $d / 2;
