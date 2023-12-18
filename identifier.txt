@@ -8,4 +8,4 @@ $a
 $name
 $myclass
 $z
-f
+$k

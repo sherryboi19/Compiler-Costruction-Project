@@ -16,10 +16,11 @@ StatementList : Statement StatementList
 Statement: DecStmt 
           | BoolExp
           | RepStmt
-          | DecStruct
+          | DesStmt
           | OutStmt
           | FuncStmt
           | ClassStmt
+          | FunCall
 ; 
           
 
@@ -28,6 +29,7 @@ DecStmt: ID '=' RHS ';'
 
 RHS: Value OP RHS
    | Value
+   | BoolExp
 ;
 
 Value: INT 
@@ -58,7 +60,7 @@ Exp: INT
 RepStmt: WHILE '(' BoolExp ')' '{' StatementList '}';
 
 
-DecStruct: IF '(' BoolExp ')' '{' StatementList '}'
+DesStmt: IF '(' BoolExp ')' '{' StatementList '}'
          | IF '(' BoolExp ')' '{' StatementList '}' ELSE '{' StatementList '}'
 ;
  
@@ -76,7 +78,20 @@ Output: STRING
       ;
 
 
-FuncStmt: FUNC FNAME_T '(' ')' '{' StatementList '}';
+FuncStmt: FUNC FNAME_T '(' Args ')' '{' StatementList '}';
+
+Args : Arg ',' Args
+     | Arg
+     | 
+;
+
+FunCall : FNAME_T '(' Args ')' ';'
+;
+
+Arg: ID
+    | ID '=' Value
+;
+
 
 ClassStmt: CLASS_T ID '{' ClassStatements '}';
 

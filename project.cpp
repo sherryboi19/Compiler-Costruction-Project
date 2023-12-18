@@ -6,7 +6,8 @@
 #include <fstream>
 #include <cstdio>
 #include <cstdlib>
-#include<stack>
+#include <stack>
+#include <vector>
 
 using namespace std;
 
@@ -39,6 +40,16 @@ bool is_Digit(char c) {
 
 bool is_Delimiter(char c) {
     return isspace(c) || c == '\n' || c == '\t';
+}
+
+double pow(double a,double b)
+{
+    double ans=1;
+    for(int i=0;i<b;i++)
+    {
+        ans*=a;
+    }
+    return ans;
 }
 
 bool is_Operator(char c)
@@ -121,11 +132,7 @@ void Lexical(string str,int linenum,ofstream &tokenout,ofstream &identiferout)
             }
             else if(c=='*')
             {
-                state=0;
-                lexeme=c;
-                tokenout<<"Tokken <"<<" BiOperator , "<<lexeme<<" > " <<endl;
-                lexeme="";
-                flag=0;
+                state=19;
             }
             else if(c=='/')
             {
@@ -185,7 +192,7 @@ void Lexical(string str,int linenum,ofstream &tokenout,ofstream &identiferout)
             }
             else
             {
-                cout<<"\033[31mERROR INVALID TOKEN AT LINE : "<<linenum<<"\033[0m"<<endl;
+                cout<<"\033[31mERROR INVALID TOKEN "<<c<<" AT LINE : "<<linenum<<"\033[0m"<<endl;
                 flag=0;
                 lexeme="";
             }
@@ -208,21 +215,35 @@ void Lexical(string str,int linenum,ofstream &tokenout,ofstream &identiferout)
                 }
                 else
                 {
-                    tokenout<<"Tokken <"<<" Identity , "<<lexeme<<" > " <<endl;
-                    ifstream identiferin("identifier.txt");
-                    string line;
-                    bool found=false;
-                    while (getline(identiferin, line)) 
+                    if(lexeme[0]!='$')
                     {
-                        if(line==lexeme)
+                        if(lexeme=="true"||lexeme=="false")
                         {
-                            found=true;
-                            break;
+                            tokenout<<"Tokken <"<<" Boolean , "<<lexeme<<" > " <<endl;
+                        }
+                        else
+                        {
+                            tokenout<<"Tokken <"<<" Function , "<<lexeme<<" > " <<endl;
                         }
                     }
-                    if(!found)
+                    else
                     {
-                        identiferout<<lexeme<<endl;
+                        tokenout<<"Tokken <"<<" Identity , "<<lexeme<<" > " <<endl;
+                        ifstream identiferin("identifier.txt");
+                        string line;
+                        bool found=false;
+                        while (getline(identiferin, line)) 
+                        {
+                            if(line==lexeme)
+                            {
+                                found=true;
+                                break;
+                            }
+                        }
+                        if(!found)
+                        {
+                            identiferout<<lexeme<<endl;
+                        }
                     }
                 }
                 lexeme="";
@@ -438,6 +459,25 @@ void Lexical(string str,int linenum,ofstream &tokenout,ofstream &identiferout)
                 flag=0;
             }
         break;
+        case 19:
+            if(c=='*')
+            {
+                state=0;
+                lexeme=lexeme+c;
+                tokenout<<"Tokken <"<<" BiOperator , "<<lexeme<<" > " <<endl;
+                lexeme="";
+                flag=0;
+            }
+            else
+            {
+                state=0;
+                assignmentline[assignmentindex]=linenum;
+                assignmentindex++;
+                tokenout<<"Tokken <"<<" BiOperator , "<<lexeme<<" > " <<endl;
+                lexeme="";
+                continue;
+            }
+        break;
     }
     if(flag)
         lexeme=lexeme+c;
@@ -449,7 +489,7 @@ void Lexical(string str,int linenum,ofstream &tokenout,ofstream &identiferout)
 
 double evaluateExpression(string expression,int line) {
     stack<double> operandStack;
-    stack<char> operatorStack;
+    stack<string> operatorStack;
 
     stringstream ss(expression);
     string token;
@@ -478,7 +518,7 @@ double evaluateExpression(string expression,int line) {
             identiferin.close();
             if(!found)
             {
-                cout << "\033[31mERROR VARIABLE NOT DECLARED AT LINE : "<<line <<"\033[0m"<<endl;
+                cout << "\033[31mERROR VARIABLE "<< token << " NOT DECLARED AT LINE : "<<line <<"\033[0m"<<endl;
                 return 0.0;
             }
             else
@@ -489,9 +529,9 @@ double evaluateExpression(string expression,int line) {
         else if (is_Digit(token[0]) || (token[0] == '-' && is_Digit(token[1]))) {
             operandStack.push(stod(token));
         } else if (is_Operator(token[0])) {
-            while (!operatorStack.empty() && operatorStack.top() != '(' && ((token[0] == '+' || token[0] == '-') && (operatorStack.top() == '*' || operatorStack.top() == '/'))) {
+            while (!operatorStack.empty() && operatorStack.top() != "(" && ((token == "+" || token == "-") && (operatorStack.top() == "*" || operatorStack.top() == "/" || operatorStack.top() == "**")) || (token == "*" && (operatorStack.top() == "/" || operatorStack.top() == "**")) || (token == "/" && operatorStack.top() == "**")) {
                 // Pop operators and perform operations
-                char op = operatorStack.top();
+                string op = operatorStack.top();
                 operatorStack.pop();
 
                 double operand2 = operandStack.top();
@@ -500,13 +540,15 @@ double evaluateExpression(string expression,int line) {
                 double operand1 = operandStack.top();
                 operandStack.pop();
 
-                if (op == '+') {
+                if (op == "+") {
                     operandStack.push(operand1 + operand2);
-                } else if (op == '-') {
+                } else if (op == "-") {
                     operandStack.push(operand1 - operand2);
-                } else if (op == '*') {
+                } else if (op == "*") {
                     operandStack.push(operand1 * operand2);
-                } else if (op == '/') {
+                } else if (op == "**") {
+                    operandStack.push(pow(operand1,operand2));
+                } else if (op == "/") {
                     if (operand2 != 0) {
                         operandStack.push(operand1 / operand2);
                     } else {
@@ -515,13 +557,22 @@ double evaluateExpression(string expression,int line) {
                     }
                 }
             }
-            operatorStack.push(token[0]);
+            string tmp="";
+            if(token[0]=='*'&&token[1]=='*')
+            {
+                tmp="**";
+            }
+            else
+            {
+                tmp=token[0];
+            }
+            operatorStack.push(tmp);
         } else if (token[0] == '(') {
-            operatorStack.push('(');
+            operatorStack.push("(");
         } else if (token[0] == ')') {
-            while (!operatorStack.empty() && operatorStack.top() != '(') {
+            while (!operatorStack.empty() && operatorStack.top() != "(") {
                 // Pop operators and perform operations until '(' is encountered
-                char op = operatorStack.top();
+                string op = operatorStack.top();
                 operatorStack.pop();
 
                 double operand2 = operandStack.top();
@@ -530,13 +581,15 @@ double evaluateExpression(string expression,int line) {
                 double operand1 = operandStack.top();
                 operandStack.pop();
 
-                if (op == '+') {
+                if (op == "+") {
                     operandStack.push(operand1 + operand2);
-                } else if (op == '-') {
+                } else if (op == "-") {
                     operandStack.push(operand1 - operand2);
-                } else if (op == '*') {
+                } else if (op == "*") {
                     operandStack.push(operand1 * operand2);
-                } else if (op == '/') {
+                } else if (op == "**") {
+                    operandStack.push(pow(operand1,operand2));
+                } else if (op == "/") {
                     if (operand2 != 0) {
                         operandStack.push(operand1 / operand2);
                     } else {
@@ -546,7 +599,7 @@ double evaluateExpression(string expression,int line) {
                 }
             }
 
-            if (!operatorStack.empty() && operatorStack.top() == '(') {
+            if (!operatorStack.empty() && operatorStack.top() == "(") {
                 // Pop '('
                 operatorStack.pop();
             } else {
@@ -561,7 +614,7 @@ double evaluateExpression(string expression,int line) {
 
     // Pop remaining operators and perform operations
     while (!operatorStack.empty()) {
-        char op = operatorStack.top();
+        string op = operatorStack.top();
         operatorStack.pop();
 
         double operand2 = operandStack.top();
@@ -570,13 +623,15 @@ double evaluateExpression(string expression,int line) {
         double operand1 = operandStack.top();
         operandStack.pop();
 
-        if (op == '+') {
+        if (op == "+") {
             operandStack.push(operand1 + operand2);
-        } else if (op == '-') {
+        } else if (op == "-") {
             operandStack.push(operand1 - operand2);
-        } else if (op == '*') {
+        } else if (op == "*") {
             operandStack.push(operand1 * operand2);
-        } else if (op == '/') {
+        } else if (op == "**") {
+            operandStack.push(pow(operand1,operand2));
+        } else if (op == "/") {
             if (operand2 != 0) {
                 operandStack.push(operand1 / operand2);
             } else {
@@ -590,9 +645,97 @@ double evaluateExpression(string expression,int line) {
     if (!operandStack.empty()) {
         return operandStack.top();
     } else {
-        cout << "\033[31mEmpty operand stack\033[0m" << endl;
+        cout << "\033[31mEMPTY OPERAND STACK\033[0m" << endl;
         return 0.0;
     }
+}
+
+string evaluateBool(string rhs,int line)
+{
+    if(rhs=="true")
+    {
+        return "1";
+    }
+    if(rhs=="false")
+    {
+        return "0";
+    }
+    stringstream ss(rhs);
+    vector<string> tokens;
+    string token;
+    while(getline(ss,token,' '))
+    {
+        tokens.push_back(token);
+    }
+    if(tokens.size()!=3)
+    {
+        cout<<"ERROR NOT A VALID BOOLEAN EXPRESSION AT LINE : "<<line<<endl;
+        return "0";
+    }
+    double operand1,operand2;
+    double operands[2];
+    int i=0;
+    int j=0;
+    do
+    {
+
+    if (tokens[j][0]=='$')
+    {
+        token=tokens[j].substr(1,string::npos);
+        ifstream identiferin("symbol.txt");
+        string line2;
+        bool found=false;
+        while (getline(identiferin, line2)) 
+        {
+            string tlex,ttype,tlexval;
+            stringstream ss(line2);
+            getline(ss,tlex,',');
+            getline(ss,ttype,',');
+            getline(ss,tlexval,',');
+            if(tlex==token&&(ttype=="Int"||ttype=="Float"))
+            {
+                found=true;
+                token=tlexval;
+                break;
+            }
+        }
+        identiferin.close();
+        if(!found)
+        {
+            cout << "\033[31mERROR VARIABLE "<<tokens[j]<<" NOT DECLARED AT LINE : "<<line <<"\033[0m"<<endl;
+            return "0";
+        }
+        else
+        {
+            operand1=stof(token);
+        }
+    }
+    else if(is_Digit(tokens[j][0]))
+    {
+        operands[i]=stof(tokens[j]);
+    }
+    i++;
+    j+=2;
+    } while (i<2);
+    
+    string op = tokens[1];
+    if (op == "<") {
+        return operands[0] < operands[1] ? "1" : "0";;
+    } else if (op == ">") {
+        return operands[0] > operands[1] ? "1" : "0";;
+    } else if (op == "<=") {
+        return operands[0] <= operands[1] ? "1" : "0";;
+    } else if (op == ">=") {
+        return operands[0] >= operands[1] ? "1" : "0";;
+    } else if (op == "==") {
+        return operands[0] == operands[1] ? "1" : "0";;
+    } else if (op == "!=") {
+        return operands[0] != operands[1] ? "1" : "0";;
+    } else {
+        cout << "\033[31mERROR UNKNOWN OPERATOR "<<op<<" AT LINE " << line <<"\033[0m"<< endl;
+        return "0";
+    }
+    
 }
 
 void SymbolTable(string line,int linenum)
@@ -633,13 +776,47 @@ void SymbolTable(string line,int linenum)
                             bool found=false;
                             for(int k=0;k<rightside.length();k++)
                             {
-                                if(rightside[k]=='+' || rightside[k]=='-' || rightside[k]=='*' || rightside[k]=='/' || rightside[k]=='%')
+                                if(rightside[k]=='+' || rightside[k]=='-' || rightside[k]=='*' || rightside[k]=='/')
                                 {
                                     found=true;
                                     break;
                                 }
                             }
-                            if(found)
+                            bool isBool=false;
+                            if(rightside=="true"||rightside=="false")
+                            {
+                                isBool=true;
+                            }
+                            for(int k=0;k<rightside.length();k++)
+                            {
+                                if(rightside[k]=='=' && rightside[k+1]=='=')
+                                {
+                                    isBool=true;
+                                    break;
+                                }
+                                if(rightside[k]=='!' && rightside[k+1]=='=')
+                                {
+                                    isBool=true;
+                                    break;
+                                }
+                                if(rightside[k]=='<' || (rightside[k]=='<' && rightside[k+1]=='='))
+                                {
+                                    isBool=true;
+                                    break;
+                                }
+                                if(rightside[k]=='>' || (rightside[k]=='>' && rightside[k+1]=='='))
+                                {
+                                    isBool=true;
+                                    break;
+                                }
+                            }
+                            if(!found&&isBool)
+                            {
+                                string result=evaluateBool(rightside,linenum);
+                                lexemeval=result;
+                                type="Boolean";
+                            }
+                            if(found&&!isBool)
                             {
                                 double result = evaluateExpression(rightside,linenum);
                                 lexemeval=to_string(result);
@@ -672,7 +849,7 @@ void SymbolTable(string line,int linenum)
                                     type="Int";
                                 }
                             }
-                            if(line[i]=='"'&&!found)
+                            if(line[i]=='"'&&!found&&!isBool)
                             {
                                 i++;
                                 while(line[i]!='"' && line[i]!='\0')
@@ -691,7 +868,7 @@ void SymbolTable(string line,int linenum)
                                     return;
                                 }
                             }
-                            else if(is_Digit(line[i])&&!found)
+                            else if(is_Digit(line[i])&&!found&&!isBool)
                             {
                                 while(is_Digit(line[i]))
                                 {
@@ -711,7 +888,7 @@ void SymbolTable(string line,int linenum)
                                     }
                                }
                             }
-                            else if(line[i]=='$'&&!found)
+                            else if(line[i]=='$'&&!found&&!isBool)
                             {
                                 i++;
                                 while(is_Letter(line[i]) || is_Digit(line[i]) || line[i]=='_')
@@ -740,7 +917,7 @@ void SymbolTable(string line,int linenum)
                                 identiferin.close();
                                 if(!found)
                                 {
-                                    cout<<"\033[31mERROR VARIABLE NOT DECLARED AT LINE : "<<linenum<<"\033[0m"<<endl;
+                                    cout<<"\033[31mERROR VARIABLE $"<<lexemeval<<" NOT DECLARED AT LINE : "<<linenum<<"\033[0m"<<endl;
                                     return;
                                 }
                             }
@@ -827,7 +1004,8 @@ string getVariableValue(const string &variable,int linenum)
 
     if (!found)
     {
-        cout << "\033[31mERROR VARIABLE NOT DECLARED AT LINE : "<<linenum<<"\033[0m" << endl;
+        cout << "\033[31mERROR VARIABLE $"<<variable<<" NOT DECLARED AT LINE : "<<linenum<<"\033[0m" << endl;
+        return "~";
     }
 
     return "";
@@ -868,6 +1046,14 @@ void PrintingOutputs(string line,int linenum)
                 string variable = line.substr(pos, end_pos - pos);
                 variable=variable.substr(1,string::npos);
                 line.replace(pos, end_pos - pos, getVariableValue(variable,linenum));
+            }
+            for(int i=0;i<line.length();i++)
+            {
+                if(line[i]=='~')
+                {
+                    cout << "\033[31mERROR CANNOT ECHO AT LINE : "<<linenum<<"\033[0m" << endl;
+                    return;
+                }
             }
             if(line[0]=='"')
             {

@@ -1,6 +1,6 @@
 value,Int,20,2
-a,Float,8.05,5
+a,Float,17.3,5
 c,String,Shaheer,6
-d,Float,2.3,4
-name,Float,8.05,7
+d,Boolean,0,4
+name,Float,17.3,7
 z,Int,10,17

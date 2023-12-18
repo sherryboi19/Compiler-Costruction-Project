@@ -13,6 +13,8 @@ Tokken < SemiColon , ; >
 Tokken < Identity , $d > 
 Tokken < BiOperator , = > 
 Tokken < Identity , $c > 
+Tokken < CondOperator , > > 
+Tokken < IntLiteral , 3 > 
 Tokken < SemiColon , ; > 
 Tokken < Identity , $a > 
 Tokken < BiOperator , = > 
@@ -20,7 +22,7 @@ Tokken < Identity , $c >
 Tokken < BiOperator , + > 
 Tokken < IntLiteral , 5 > 
 Tokken < BiOperator , * > 
-Tokken < Identity , $d > 
+Tokken < IntLiteral , 6 > 
 Tokken < BiOperator , / > 
 Tokken < IntLiteral , 2 > 
 Tokken < SemiColon , ; > 
@@ -56,7 +58,7 @@ Tokken < BiOperator , = >
 Tokken < IntLiteral , 10 > 
 Tokken < SemiColon , ; > 
 Tokken < KeyWord , function > 
-Tokken < Identity , f > 
+Tokken < Function , myf > 
 Tokken < Bracket , ( > 
 Tokken < Bracket , ) > 
 Tokken < Bracket , { > 
@@ -68,6 +70,6 @@ Tokken < Bracket , } >
 Tokken < KeyWord , echo > 
 Tokken < StrLiteral , Its  > 
 Tokken < StrConcatinate , . > 
-Tokken < Identity , $c > 
+Tokken < Identity , $k > 
 Tokken < SemiColon , ; > 
 Tokken < Closing , ?> > 
