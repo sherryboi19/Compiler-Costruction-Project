@@ -439,10 +439,10 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    10,    10,    12,    13,    16,    17,    18,    19,    20,
-      21,    22,    25,    26,    27,    28,    29,    30,    31,    32,
-      33,    34,    35,    36,    39,    40,    41,    42,    43,    44,
-      46,    47,    50,    53,    54,    57,    60,    61,    63,    64,
-      65,    66,    70,    72,    74,    75,    78,    79
+      21,    22,    26,    29,    30,    33,    34,    35,    36,    39,
+      40,    41,    42,    43,    46,    47,    48,    49,    50,    51,
+      54,    55,    58,    61,    62,    66,    69,    70,    72,    73,
+      74,    75,    79,    81,    83,    84,    87,    88
 };
 #endif
 
@@ -1400,55 +1400,13 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 10 "syntaxpart.y"
-    {printf("Code Compiled Successfully");  exit(0);;}
-    break;
-
-  case 24:
-
-/* Line 1455 of yacc.c  */
-#line 39 "syntaxpart.y"
-    { (yyval) = (yyvsp[(1) - (3)]) > (yyvsp[(3) - (3)]); ;}
-    break;
-
-  case 25:
-
-/* Line 1455 of yacc.c  */
-#line 40 "syntaxpart.y"
-    { (yyval) = (yyvsp[(1) - (3)]) < (yyvsp[(3) - (3)]); ;}
-    break;
-
-  case 26:
-
-/* Line 1455 of yacc.c  */
-#line 41 "syntaxpart.y"
-    { (yyval) = (yyvsp[(1) - (3)]) == (yyvsp[(3) - (3)]); ;}
-    break;
-
-  case 27:
-
-/* Line 1455 of yacc.c  */
-#line 42 "syntaxpart.y"
-    { (yyval) = (yyvsp[(1) - (3)]) != (yyvsp[(3) - (3)]); ;}
-    break;
-
-  case 28:
-
-/* Line 1455 of yacc.c  */
-#line 43 "syntaxpart.y"
-    { (yyval) = (yyvsp[(1) - (3)]) >= (yyvsp[(3) - (3)]); ;}
-    break;
-
-  case 29:
-
-/* Line 1455 of yacc.c  */
-#line 44 "syntaxpart.y"
-    { (yyval) = (yyvsp[(1) - (3)]) <= (yyvsp[(3) - (3)]); ;}
+    {printf("\033[32mCode Compiled Successfully\033[0m");  exit(0);;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1452 "syntaxpart.tab.c"
+#line 1410 "syntaxpart.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1660,10 +1618,10 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 83 "syntaxpart.y"
+#line 92 "syntaxpart.y"
 
 void yyerror(const char *str)
 {
-  printf("Code cannot be compiled\n");
-  printf("\033[31mERROR %s AT LINE %d\n\033[0m",str,yylineno);
+  printf("\033[31mCode Cannot be Compiled!\033[0m");
+  //printf("\033[31mERROR %s AT LINE %d\033[0m",str,yylineno);
 }

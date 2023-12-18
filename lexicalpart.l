@@ -21,11 +21,11 @@ del [ \t\n]
 "$"_?{letter}({letter}|{digit})*  {return(ID);}
 {digit}+                          {return(INT);}
 {digit}+"."{digit}*               {return(FLOAT);}
-'[^\']'                           {;}
+'[^\']'                           {;} // For CHAR
 \"[^\"]*\"                        {return(STRING);}
 "["|"{"|"("|")"|"}"|"]"|";"       {return yytext[0];}
-("//"|"#").*                      {;}
-"/*"(.|\n)*"*/"                        {;}
+("//"|"#").*                      {;} //For Comments
+"/*"(.|\n)*"*/"                        {;} // For multiline Comment
 "<"|">"|"="|"*"|"+"|"/"|"-"|"%"|"."  {return yytext[0];}
 "<="                              {return(LE);}
 ">="                              {return(GE);}

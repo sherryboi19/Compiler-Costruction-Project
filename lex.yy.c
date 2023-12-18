@@ -759,7 +759,7 @@ YY_RULE_SETUP
 case 13:
 YY_RULE_SETUP
 #line 24 "lexicalpart.l"
-{;}
+{;} // For CHAR
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
@@ -774,12 +774,12 @@ YY_RULE_SETUP
 case 16:
 YY_RULE_SETUP
 #line 27 "lexicalpart.l"
-{;}
+{;} //For Comments
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 28 "lexicalpart.l"
-{;}
+{;} // For multiline Comment
 	YY_BREAK
 case 18:
 YY_RULE_SETUP

@@ -20,5 +20,5 @@
             echo "Hi";
         }
     }
-    echo "Its ".$a;
+    echo "Its ".$c;
 ?>

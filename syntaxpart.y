@@ -7,7 +7,7 @@
 
 %%
 
-ProgramBlock: PhpStart StatementList PhpEnd  {printf("Code Compiled Successfully");  exit(0);} 
+ProgramBlock: PhpStart StatementList PhpEnd  {printf("\033[32mCode Compiled Successfully\033[0m");  exit(0);} 
 
 StatementList : Statement StatementList 
               | 
@@ -19,39 +19,48 @@ Statement: DecStmt
           | DecStruct
           | OutStmt
           | FuncStmt
-          | ClassStmt; 
+          | ClassStmt
+; 
           
 
-DecStmt: ID '=' RHS ';';
+DecStmt: ID '=' RHS ';'
+;
+
 RHS: Value OP RHS
-   | Value;
+   | Value
+;
+
 Value: INT 
      | FLOAT 
      | STRING 
-     | ID;
+     | ID
+;
+
 OP: '+'
   | '-'
   | '*'
   | POW
-  | '/';
+  | '/'
+;
 
+BoolExp: Exp '>' Exp 
+       | Exp '<' Exp  
+       | Exp ET Exp   
+       | Exp NE Exp   
+       | Exp GE Exp  
+       | Exp LE Exp  
+;
 
-BoolExp: Exp '>' Exp  { $$ = $1 > $3; }
-       | Exp '<' Exp  { $$ = $1 < $3; }
-       | Exp ET Exp   { $$ = $1 == $3; }
-       | Exp NE Exp   { $$ = $1 != $3; }
-       | Exp GE Exp   { $$ = $1 >= $3; }
-       | Exp LE Exp   { $$ = $1 <= $3; }
-       ;
 Exp: INT 
-    |ID;       
-
+    |ID
+;       
 
 RepStmt: WHILE '(' BoolExp ')' '{' StatementList '}';
 
 
 DecStruct: IF '(' BoolExp ')' '{' StatementList '}'
-         | IF '(' BoolExp ')' '{' StatementList '}' ELSE '{' StatementList '}';
+         | IF '(' BoolExp ')' '{' StatementList '}' ELSE '{' StatementList '}'
+;
  
 
 OutStmt: ECHO_T Output OutputP ';'
@@ -83,6 +92,6 @@ ClassStatement: DecStmt
 %%
 void yyerror(const char *str)
 {
-  printf("Code cannot be compiled\n");
-  printf("\033[31mERROR %s AT LINE %d\n\033[0m",str,yylineno);
+  printf("\033[31mCode Cannot be Compiled!\033[0m");
+  //printf("\033[31mERROR %s AT LINE %d\033[0m",str,yylineno);
 }

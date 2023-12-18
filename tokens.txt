@@ -71,6 +71,7 @@ Tokken < Bracket , } >
 Tokken < Bracket , } > 
 Tokken < KeyWord , echo > 
 Tokken < StrLiteral , Its  > 
-Tokken < Identity , $a > 
+Tokken < StrConcatinate , . > 
+Tokken < Identity , $c > 
 Tokken < SemiColon , ; > 
 Tokken < Closing , ?> > 
