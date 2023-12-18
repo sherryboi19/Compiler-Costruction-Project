@@ -15,7 +15,7 @@
     }
     class $myclass{
         $z=10;
-        function $f(){
+        function f(){
             echo "Hi";
         }
     }

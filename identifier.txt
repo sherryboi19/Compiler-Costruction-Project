@@ -2,10 +2,10 @@
 |   IDENTIFIERS   |
 -------------------
 $value
-$a
 $c
 $d
+$a
 $name
 $myclass
 $z
-$f
+f

@@ -6,6 +6,7 @@
 letter[A-Za-z]
 digit [0-9]
 del [ \t\n]
+identifier {letter}({letter}|{digit})*
 
 %%
 
@@ -17,6 +18,7 @@ del [ \t\n]
 "function"                        {return(FUNC);}
 [Ww][Hh][Ii][Ll][Ee]              {return(WHILE);}
 [Cc][Ll][Aa][Ss][Ss]              {return(CLASS_T);}
+{identifier}                      {return FNAME_T;}
 {letter}*                         {;}
 "$"_?{letter}({letter}|{digit})*  {return(ID);}
 {digit}+                          {return(INT);}

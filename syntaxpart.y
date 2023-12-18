@@ -3,7 +3,7 @@
     #include<stdlib.h>
     extern int yylineno;
 %}
-%token PhpStart PhpEnd ID INT FLOAT STRING LE GE ET NE POW IF ELSE FUNC WHILE ECHO_T CLASS_T
+%token PhpStart PhpEnd ID INT FLOAT STRING LE GE ET NE POW IF ELSE FUNC WHILE ECHO_T CLASS_T FNAME_T
 
 %%
 
@@ -76,7 +76,7 @@ Output: STRING
       ;
 
 
-FuncStmt: FUNC ID '(' ')' '{' StatementList '}';
+FuncStmt: FUNC FNAME_T '(' ')' '{' StatementList '}';
 
 ClassStmt: CLASS_T ID '{' ClassStatements '}';
 

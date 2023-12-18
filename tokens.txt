@@ -6,10 +6,6 @@ Tokken < Identity , $value >
 Tokken < BiOperator , = > 
 Tokken < IntLiteral , 20 > 
 Tokken < SemiColon , ; > 
-Tokken < Identity , $a > 
-Tokken < BiOperator , = > 
-Tokken < StrLiteral , Hello > 
-Tokken < SemiColon , ; > 
 Tokken < Identity , $c > 
 Tokken < BiOperator , = > 
 Tokken < FloatLiteral , 2.3 > 
@@ -60,7 +56,7 @@ Tokken < BiOperator , = >
 Tokken < IntLiteral , 10 > 
 Tokken < SemiColon , ; > 
 Tokken < KeyWord , function > 
-Tokken < Identity , $f > 
+Tokken < Identity , f > 
 Tokken < Bracket , ( > 
 Tokken < Bracket , ) > 
 Tokken < Bracket , { > 

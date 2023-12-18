@@ -55,7 +55,8 @@
      FUNC = 271,
      WHILE = 272,
      ECHO_T = 273,
-     CLASS_T = 274
+     CLASS_T = 274,
+     FNAME_T = 275
    };
 #endif
 
