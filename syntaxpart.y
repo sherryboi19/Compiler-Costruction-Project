@@ -8,10 +8,11 @@
 %%
 
 ProgramBlock: PhpStart StatementList PhpEnd  {printf("\033[32mCode Compiled Successfully\033[0m");  exit(0);} 
+;
 
 StatementList : Statement StatementList 
               | 
-              ;
+;
 
 Statement: DecStmt 
           | BoolExp
@@ -57,7 +58,8 @@ Exp: INT
     |ID
 ;       
 
-RepStmt: WHILE '(' BoolExp ')' '{' StatementList '}';
+RepStmt: WHILE '(' BoolExp ')' '{' StatementList '}'
+;
 
 
 DesStmt: IF '(' BoolExp ')' '{' StatementList '}'
@@ -66,19 +68,21 @@ DesStmt: IF '(' BoolExp ')' '{' StatementList '}'
  
 
 OutStmt: ECHO_T Output OutputP ';'
-        ;
+;
 
 OutputP: '.' Output OutputP
         | 
-        ;
+;
+
 Output: STRING
       | ID 
       | INT
       | FLOAT
-      ;
+;
 
 
-FuncStmt: FUNC FNAME_T '(' Args ')' '{' StatementList '}';
+FuncStmt: FUNC FNAME_T '(' Args ')' '{' StatementList '}'
+;
 
 Args : Arg ',' Args
      | Arg

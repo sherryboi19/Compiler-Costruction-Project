@@ -530,7 +530,6 @@ double evaluateExpression(string expression,int line) {
             operandStack.push(stod(token));
         } else if (is_Operator(token[0])) {
             while (!operatorStack.empty() && operatorStack.top() != "(" && ((token == "+" || token == "-") && (operatorStack.top() == "*" || operatorStack.top() == "/" || operatorStack.top() == "**")) || (token == "*" && (operatorStack.top() == "/" || operatorStack.top() == "**")) || (token == "/" && operatorStack.top() == "**")) {
-                // Pop operators and perform operations
                 string op = operatorStack.top();
                 operatorStack.pop();
 
@@ -707,7 +706,7 @@ string evaluateBool(string rhs,int line)
         }
         else
         {
-            operand1=stof(token);
+            operands[i]=stof(token);
         }
     }
     else if(is_Digit(tokens[j][0]))
@@ -1089,7 +1088,6 @@ void PrintingOutputs(string line,int linenum)
 }
 
 int main() {
-    // Test the lexical analyzer with a PHP code snippet
     ifstream file("source.txt");
     if (!file) 
     {
