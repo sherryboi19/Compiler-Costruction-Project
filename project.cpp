@@ -57,7 +57,7 @@ bool is_Operator(char c)
     return c=='+'||c=='-'||c=='*'||c=='/';
 }
 
-void Lexical(string str,int linenum,ofstream &tokenout,ofstream &identiferout)
+int Lexical(string str,int linenum,ofstream &tokenout,ofstream &identiferout)
 {    
     int i=0;
     if(!multiline)
@@ -95,7 +95,22 @@ void Lexical(string str,int linenum,ofstream &tokenout,ofstream &identiferout)
                     cout<<"\033[31mERROR INVALID TOKEN AT LINE : "<<linenum<<"\033[0m"<<endl;
                     flag=0;
                     lexeme="";
-                    break;
+                    tokenout.close();
+                    ifstream tokenin("tokens.txt");
+                    string line;
+                    ofstream temp("updatedtokens.txt");
+                    while (getline(tokenin, line)) 
+                    {
+                        if(line=="-----------------------------------"||line=="|        TOKENS GGENERATED        |"||line=="-----------------------------------")
+                        {
+                            temp<<line<<endl;
+                        }
+                    }
+                    temp.close();
+                    tokenin.close();
+                    remove("tokens.txt");
+                    rename("updatedtokens.txt","tokens.txt");
+                    return 1;
                 }
             }
             else if(is_Digit(c))
@@ -195,6 +210,22 @@ void Lexical(string str,int linenum,ofstream &tokenout,ofstream &identiferout)
                 cout<<"\033[31mERROR INVALID TOKEN "<<c<<" AT LINE : "<<linenum<<"\033[0m"<<endl;
                 flag=0;
                 lexeme="";
+                tokenout.close();
+                ifstream tokenin("tokens.txt");
+                string line;
+                ofstream temp("updatedtokens.txt");
+                while (getline(tokenin, line)) 
+                {
+                    if(line=="-----------------------------------"||line=="|        TOKENS GGENERATED        |"||line=="-----------------------------------")
+                    {
+                        temp<<line<<endl;
+                    }
+                }
+                temp.close();
+                tokenin.close();
+                remove("tokens.txt");
+                rename("updatedtokens.txt","tokens.txt");
+                return 1;
             }
         break;
 
@@ -484,7 +515,7 @@ void Lexical(string str,int linenum,ofstream &tokenout,ofstream &identiferout)
 
     i++;
     }
-
+    return 0;
 }
 
 double evaluateExpression(string expression,int line) {
@@ -669,7 +700,7 @@ string evaluateBool(string rhs,int line)
     if(tokens.size()!=3)
     {
         cout<<"ERROR NOT A VALID BOOLEAN EXPRESSION AT LINE : "<<line<<endl;
-        return "0";
+        return "!";
     }
     double operand1,operand2;
     double operands[2];
@@ -702,7 +733,7 @@ string evaluateBool(string rhs,int line)
         if(!found)
         {
             cout << "\033[31mERROR VARIABLE "<<tokens[j]<<" NOT DECLARED AT LINE : "<<line <<"\033[0m"<<endl;
-            return "0";
+            return "!";
         }
         else
         {
@@ -732,12 +763,12 @@ string evaluateBool(string rhs,int line)
         return operands[0] != operands[1] ? "1" : "0";;
     } else {
         cout << "\033[31mERROR UNKNOWN OPERATOR "<<op<<" AT LINE " << line <<"\033[0m"<< endl;
-        return "0";
+        return "!";
     }
     
 }
 
-void SymbolTable(string line,int linenum)
+int SymbolTable(string line,int linenum)
 {
     ofstream sybolout("symbol.txt",ios::app);
     int i=0,j;
@@ -747,7 +778,7 @@ void SymbolTable(string line,int linenum)
     {
         if(linenum==commentedline[j])
         {
-            return;
+            return 0;
         }
     }
     for(int j=0;j<assignmentindex;j++)
@@ -812,14 +843,21 @@ void SymbolTable(string line,int linenum)
                             if(!found&&isBool)
                             {
                                 string result=evaluateBool(rightside,linenum);
+                                if(result=="!")
+                                {
+                                    return 1;
+                                }
                                 lexemeval=result;
                                 type="Boolean";
                             }
                             if(found&&!isBool)
                             {
                                 double result = evaluateExpression(rightside,linenum);
+                                if(result==0.0)
+                                {
+                                    return 1;
+                                }
                                 lexemeval=to_string(result);
-                                //if there are all 0 after . then remove them
                                 if(lexemeval.find('.')!=string::npos)
                                 {
                                     for(int k=lexemeval.length()-1;k>=0;k--)
@@ -864,7 +902,7 @@ void SymbolTable(string line,int linenum)
                                 else
                                 {
                                     cout<<"\033[31mERROR STRING NOT CLOSED AT LINE : "<<linenum<<"\033[0m"<<endl;
-                                    return;
+                                    return 1;
                                 }
                             }
                             else if(is_Digit(line[i])&&!found&&!isBool)
@@ -917,7 +955,7 @@ void SymbolTable(string line,int linenum)
                                 if(!found)
                                 {
                                     cout<<"\033[31mERROR VARIABLE $"<<lexemeval<<" NOT DECLARED AT LINE : "<<linenum<<"\033[0m"<<endl;
-                                    return;
+                                    return 1;
                                 }
                             }
                             
@@ -977,7 +1015,7 @@ void SymbolTable(string line,int linenum)
             }
         }
     }
-    
+    return 0;
 }
 
 string getVariableValue(const string &variable,int linenum)
@@ -1009,14 +1047,14 @@ string getVariableValue(const string &variable,int linenum)
 
     return "";
 }
-
-void PrintingOutputs(string line,int linenum)
+vector<string> printing;
+int PrintingOutputs(string line,int linenum)
 {
     for(int j=0;j<commentindex;j++)
     {
         if(linenum==commentedline[j])
         {
-            return;
+            return 0;
         }
     }
     for(int i=0;i<linetoPrintindex;i++)
@@ -1051,7 +1089,7 @@ void PrintingOutputs(string line,int linenum)
                 if(line[i]=='~')
                 {
                     cout << "\033[31mERROR CANNOT ECHO AT LINE : "<<linenum<<"\033[0m" << endl;
-                    return;
+                    return 1;
                 }
             }
             if(line[0]=='"')
@@ -1082,12 +1120,24 @@ void PrintingOutputs(string line,int linenum)
                 temp=temp.substr(0,temp.length()-1);
             }
             line=temp;
-            cout<<line<<endl;
+            printing.push_back(line);
         }
     }
+    return 0;
+}
+
+void cleanfile(const string filename)
+{
+    ofstream temp("temp.txt");
+    ifstream file(filename);
+    temp.close();
+    file.close();
+    remove(filename.c_str());
+    rename("temp.txt",filename.c_str());
 }
 
 int main() {
+    int lexres=0,symbolres=0,printres=0,evalres=0;
     ifstream file("source.txt");
     if (!file) 
     {
@@ -1106,7 +1156,18 @@ int main() {
     int linenum=0;
     while (getline(file, line)) {
         linenum++;
-        Lexical(line,linenum,tokenout,identiferout);        
+        lexres=Lexical(line,linenum,tokenout,identiferout);
+        if(lexres==1)
+        {
+            cout<<"-----------------------------------"<<endl;
+            cout << "\033[31mCode Cannot be Compiled!\033[0m" << endl;
+            cout<<"-----------------------------------"<<endl;
+            cleanfile("tokens.txt");
+            cleanfile("identifier.txt");
+            cleanfile("symbol.txt");
+            system("pause");
+            return 1;
+        }        
     }
     tokenout.close();
     identiferout.close();
@@ -1125,16 +1186,13 @@ int main() {
             result += buffer;
     }
     _pclose(pipe);
-    cout<<"-----------------------------------"<<endl;
-    cout <<result << endl;
-    cout<<"-----------------------------------"<<endl;
+    
 
     for(int i=0;i<result.length()-1;i++)
     {
         if(result[i]=='!')
         {
-            system("pause");
-            return 0;
+            evalres=1;
         }
     }
 
@@ -1147,7 +1205,18 @@ int main() {
     linenum=0;
     while (getline(file2, line)) {
         linenum++;
-        SymbolTable(line,linenum); 
+        symbolres = SymbolTable(line,linenum); 
+        if(symbolres==1)
+        {
+            cout<<"-----------------------------------"<<endl;
+            cout << "\033[31mCode Cannot be Compiled!\033[0m" << endl;
+            cout<<"-----------------------------------"<<endl;
+            cleanfile("symbol.txt");
+            cleanfile("tokens.txt");
+            cleanfile("identifier.txt");
+            system("pause");
+            return 1;
+        }
     }
     file2.close();
 
@@ -1160,11 +1229,40 @@ int main() {
     linenum=0;
     while (getline(file3, line)) {
         linenum++;
-        PrintingOutputs(line,linenum); 
+        printres = PrintingOutputs(line,linenum); 
+        if(printres==1)
+        {
+            cout<<"-----------------------------------"<<endl;
+            cout << "\033[31mCode Cannot be Compiled!\033[0m" << endl;
+            cout<<"-----------------------------------"<<endl;
+            cleanfile("symbol.txt");
+            cleanfile("tokens.txt");
+            cleanfile("identifier.txt");
+            system("pause");
+            return 1;
+        }
     }
     file3.close();
 
-    
+    if(lexres==0&&symbolres==0&&printres==0&&evalres==0)
+    {
+        cout<<"-----------------------------------"<<endl;
+        cout << result << endl;
+        cout<<"-----------------------------------"<<endl;
+        for(int i=0;i<printing.size();i++)
+        {
+            cout<<printing[i]<<endl;
+        }
+    }
+    else
+    {
+        cout<<"-----------------------------------"<<endl;
+        cout << result << endl;
+        cout<<"-----------------------------------"<<endl;
+        cleanfile("symbol.txt");
+        cleanfile("tokens.txt");
+        cleanfile("identifier.txt");
+    }
 
     system("pause");
     return 0;

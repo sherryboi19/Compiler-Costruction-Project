@@ -1,6 +1,0 @@
-value,Int,20,2
-a,Int,17,5
-c,String,Shaheer,6
-d,Boolean,0,4
-name,Int,17,7
-z,Int,10,14

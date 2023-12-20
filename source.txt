@@ -16,5 +16,5 @@
             echo "Hi";
         }
     }
-    echo "Its ".$c;
+    echo "Its ".$k;
 ?>
