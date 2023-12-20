@@ -56,6 +56,7 @@ BoolExp: Exp '>' Exp
 
 Exp: INT 
     |ID
+    |FLOAT
 ;       
 
 RepStmt: WHILE '(' BoolExp ')' '{' StatementList '}'
